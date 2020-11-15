@@ -21,10 +21,30 @@ class PostDetialView(APIView):
 
 class PostCreateView(APIView):
     def post(self, request):
-        post = PostCreateSerializer(data=request.data)
+        serializer = PostCreateSerializer(data=request.data)
 
-        if post.is_valid():
-            new_post = post.save()
+        if serializer.is_valid():
+            new_post = serializer.save()
+            if '<hr />' in new_post.body:
+                new_post.truncate = len(
+                    new_post.body[:new_post.body.find('<hr />')])
+            else:
+                new_post.truncate = 50
+
+        if new_post.draft == False:
+            new_post.published = timezone.now()
+        new_post.save()
+
+        return Response(status=201)
+
+
+class PostUpdateView(APIView):
+    def post(self, request, pk):
+        post = Post.objects.get(id=pk)
+        serializer = PostCreateSerializer(data=request.data, instance=post)
+
+        if serializer.is_valid():
+            new_post = serializer.save()
             if '<hr />' in new_post.body:
                 new_post.truncate = len(
                     new_post.body[:new_post.body.find('<hr />')])
