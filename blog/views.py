@@ -57,3 +57,10 @@ class PostUpdateView(APIView):
 
         return Response(status=201)
 
+
+class PostDeleteView(APIView):
+    def post(self, request, pk):
+        post = Post.objects.get(id=pk)
+        post.delete()  
+        return Response(status=201)
+
