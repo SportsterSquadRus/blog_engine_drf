@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import PostListSerializer, PostDetailSerializer, PostCreateSerializer
+from .serializer import PostListSerializer, PostSerializer
 from .models import Post
 from django.utils import timezone
 
@@ -15,13 +15,13 @@ class PostsListView(APIView):
 class PostDetialView(APIView):
     def get(self, request, pk):
         post = Post.objects.get(id=pk, draft=False)
-        serializer = PostDetailSerializer(post)
+        serializer = PostSerializer(post)
         return Response(serializer.data)
 
 
 class PostCreateView(APIView):
     def post(self, request):
-        serializer = PostCreateSerializer(data=request.data)
+        serializer = PostSerializer(data=request.data)
 
         if serializer.is_valid():
             new_post = serializer.save()
@@ -41,7 +41,7 @@ class PostCreateView(APIView):
 class PostUpdateView(APIView):
     def post(self, request, pk):
         post = Post.objects.get(id=pk)
-        serializer = PostCreateSerializer(data=request.data, instance=post)
+        serializer = PostSerializer(data=request.data, instance=post)
 
         if serializer.is_valid():
             new_post = serializer.save()

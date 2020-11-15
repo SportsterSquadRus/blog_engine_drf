@@ -8,20 +8,10 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('author', 'title', 'body',)
+        fields = '__all__'
 
 
-class PostDetailSerializer(serializers.ModelSerializer):
-
-    author = serializers.SlugRelatedField(slug_field='username', read_only=True)
-
-    class Meta:
-        model = Post
-        exclude = ('draft',)
-
-
-class PostCreateSerializer(serializers.ModelSerializer):
-
+class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
