@@ -18,3 +18,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         exclude = ('draft',)
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Post
+        fields = '__all__'
