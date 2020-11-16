@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import PostListSerializer, PostSerializer, CommentSerializer
+from .serializer import PostListSerializer, PostSerializer, CommentSerializer, PostCreateSerializer
 from .models import Post, Comment
 from django.utils import timezone
 
@@ -21,7 +21,7 @@ class PostDetialView(APIView):
 
 class PostCreateView(APIView):
     def post(self, request):
-        serializer = PostSerializer(data=request.data)
+        serializer = PostCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             new_post = serializer.save()
@@ -41,7 +41,7 @@ class PostCreateView(APIView):
 class PostUpdateView(APIView):
     def post(self, request, pk):
         post = Post.objects.get(id=pk)
-        serializer = PostSerializer(data=request.data, instance=post)
+        serializer = PostCreateSerializer(data=request.data, instance=post)
 
         if serializer.is_valid():
             new_post = serializer.save()

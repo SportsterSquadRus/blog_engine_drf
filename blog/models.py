@@ -4,17 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(
-        auth.models.User, related_name='comment', on_delete=models.CASCADE, null=True)
-    body = models.TextField(verbose_name='Текст комментярия')
-    date_pub = models.DateTimeField(auto_now_add=True)
 
-    content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, null=True)
-    object_id = models.PositiveIntegerField(null=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
-    # parent = models.ForeignKey('self', verbose_name="Родитель", on_delete=models.CASCADE, blank=True, null=True, related_name="children")
 
 
 class Post(models.Model):
@@ -26,10 +16,18 @@ class Post(models.Model):
     author = models.ForeignKey(auth.models.User, blank=True,
                                null=True, on_delete=models.CASCADE, verbose_name='Автор')
     draft = models.BooleanField(verbose_name='Черновик', default=False)
-    comments = GenericRelation(Comment)
 
     def __str__(self):
         return str(self.title)
 
 
-# {"title": "post177", "body": "lala<cut>lolo", "author":1}
+class Comment(models.Model):
+    author = models.ForeignKey(
+        auth.models.User, related_name='comment', on_delete=models.CASCADE, null=True)
+    body = models.TextField(verbose_name='Текст комментярия')
+    date_pub = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, verbose_name="Пост", on_delete=models.CASCADE, related_name="comments")
+    parent = models.ForeignKey('self', verbose_name="Родитель", on_delete=models.CASCADE, blank=True, null=True, related_name="children")
+
+
+# {"title": "post2", "body": "lala<<hr />lolo", "author":1}
