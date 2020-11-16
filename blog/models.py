@@ -14,6 +14,7 @@ class Comment(models.Model):
         ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+    # parent = models.ForeignKey('self', verbose_name="Родитель", on_delete=models.CASCADE, blank=True, null=True, related_name="children")
 
 
 class Post(models.Model):
