@@ -4,7 +4,12 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 
 
-
+class Like(models.Model):
+    user = models.ForeignKey(
+        auth.models.User, related_name='likes', on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
 
 class Post(models.Model):
@@ -16,6 +21,14 @@ class Post(models.Model):
     author = models.ForeignKey(auth.models.User, blank=True,
                                null=True, on_delete=models.CASCADE, verbose_name='Автор')
     draft = models.BooleanField(verbose_name='Черновик', default=False)
+    likes = GenericRelation(Like)
+
+    @property
+    def total_likes(self):
+        return self.likes.count()
+
+    def likeOrNot(self, user):
+        return True if len(self.likes.filter(user=user)) == 0 else False
 
     def __str__(self):
         return str(self.title)
@@ -26,8 +39,10 @@ class Comment(models.Model):
         auth.models.User, related_name='comment', on_delete=models.CASCADE, null=True)
     body = models.TextField(verbose_name='Текст комментярия')
     date_pub = models.DateTimeField(auto_now_add=True)
-    post = models.ForeignKey(Post, verbose_name="Пост", on_delete=models.CASCADE, related_name="comments")
-    parent = models.ForeignKey('self', verbose_name="Родитель", on_delete=models.CASCADE, blank=True, null=True, related_name="children")
+    post = models.ForeignKey(Post, verbose_name="Пост",
+                             on_delete=models.CASCADE, related_name="comments")
+    parent = models.ForeignKey('self', verbose_name="Родитель",
+                               on_delete=models.CASCADE, blank=True, null=True, related_name="children")
 
 
 # {"title": "post2", "body": "lala<<hr />lolo", "author":1}
