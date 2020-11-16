@@ -11,6 +11,9 @@ class Like(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def __str__(self):
+        return str(self.user)
+
 
 class Post(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок поста')
@@ -26,6 +29,10 @@ class Post(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+    @property
+    def likers(self):
+        return self.likes.all()
 
     def likeOrNot(self, user):
         return True if len(self.likes.filter(user=user)) == 0 else False
