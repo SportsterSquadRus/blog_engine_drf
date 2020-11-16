@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import PostListSerializer, PostSerializer, CommentSerializer, PostCreateSerializer
+from .serializer import PostListSerializer, PostSerializer, CommentCreateSerializer, PostCreateSerializer
 from .models import Post, Comment
 from django.utils import timezone
 
@@ -67,7 +67,7 @@ class PostDeleteView(APIView):
 
 class CommentCreateView(APIView):
     def post(self, request):
-        serializer = CommentSerializer(data=request.data)
+        serializer = CommentCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             new_comment = serializer.save()
