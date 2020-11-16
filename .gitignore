@@ -1,2 +1,6 @@
 env
+db.sqlite3
 blog_engine_drf/passwords_drf.py
+blog_engine_drf/__pycache__
+blog/__pycache__
+blog/migrations/__pycache__
