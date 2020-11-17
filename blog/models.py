@@ -4,6 +4,12 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 
 
+class Tag(models.Model):
+    tag_title = models.CharField(unique=True, max_length=50)
+
+    def __str__(self):
+        return self.tag_title
+
     
 class Like(models.Model):
     user = models.ForeignKey(
@@ -11,7 +17,6 @@ class Like(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-
 
     def __str__(self):
         return str(self.user)
@@ -27,6 +32,7 @@ class Post(models.Model):
                                null=True, on_delete=models.CASCADE, verbose_name='Автор')
     draft = models.BooleanField(verbose_name='Черновик', default=False)
     likes = GenericRelation(Like)
+    tags = models.ManyToManyField(Tag)
 
     @property
     def total_likes(self):
@@ -55,4 +61,4 @@ class Comment(models.Model):
         return self.likes.count()
 
 
-# {"title": "post2", "body": "lala<<hr />lolo", "author":1}
+# {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false}

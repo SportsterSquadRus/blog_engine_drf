@@ -18,7 +18,7 @@ class PostDetialView(APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
-
+#   {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false, "tags": [ {"tag_title": "tag2"}, {"tag_title": "tag4"} ]}
 class PostCreateView(APIView):
     def post(self, request):
         serializer = PostCreateSerializer(data=request.data)
@@ -31,11 +31,14 @@ class PostCreateView(APIView):
             else:
                 new_post.truncate = 50
 
-        if new_post.draft == False:
-            new_post.published = timezone.now()
-        new_post.save()
+            if new_post.draft == False:
+                new_post.published = timezone.now()
+            new_post.save()
 
-        return Response(status=201)
+            return Response(status=201)
+        else:
+            print(serializer.errors)
+            return Response(status=400)
 
 
 class PostUpdateView(APIView):

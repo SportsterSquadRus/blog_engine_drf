@@ -1,9 +1,13 @@
 from rest_framework import serializers
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, Tag
+from .utils import banned_tags_check
+
+
+class TagSerializer(serializers.Serializer):
+    tag_title = serializers.CharField(max_length=200)
 
 
 class LikeSerializer(serializers.ModelSerializer):
-
     user = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
 
@@ -27,13 +31,11 @@ class RecursiveSerializer(serializers.Serializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
-
         model = Comment
         fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
     likes = LikeSerializer(many=True)
@@ -46,9 +48,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
+    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Post
@@ -56,20 +58,32 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
     comments = CommentSerializer(many=True)
     likes = LikeSerializer(many=True)
-
+    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Post
-        fields = ('author', 'published','title', 'body', 'total_likes', 'likes', 'comments')
+        fields = ('author', 'published','title', 'body', 'total_likes', 'tags', 'likes', 'comments')
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('author', 'title', 'body', 'draft', 'tags')
+
+    def create(self, validated_data):
+        print(validated_data)
+        tags = validated_data.pop('tags')
+
+        post = Post.objects.create(**validated_data)
+        for tag in tags:
+            if banned_tags_check(tag['tag_title']):
+                tag_object, created = Tag.objects.get_or_create(tag_title=tag['tag_title'])
+                post.tags.add(tag_object)
+        return post
+#   {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false, "tags": [ {"tag_title": "tag2"}, {"tag_title": "tag4"} ]}
