@@ -69,11 +69,9 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('author', 'published','title', 'body', 'total_likes', 'tags', 'likes', 'comments')
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.Serializer):
+    tag_title = serializers.CharField(max_length=200)
 
-    class Meta:
-        model = Tag
-        fields = "__all__"
 
 class PostCreateSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
@@ -83,6 +81,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
         fields = ('author', 'title', 'body', 'draft', 'tags')
 
     def create(self, validated_data):
+        print(validated_data)
         tags = validated_data.pop('tags')
 
         post = Post.objects.create(**validated_data)
