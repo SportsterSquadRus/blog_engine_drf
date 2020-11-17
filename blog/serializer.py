@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment, Like
+from .models import Post, Comment, Like, Tag
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -49,6 +49,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
+    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Post
@@ -61,15 +62,17 @@ class PostSerializer(serializers.ModelSerializer):
         slug_field='username', read_only=True)
     comments = CommentSerializer(many=True)
     likes = LikeSerializer(many=True)
-
+    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Post
-        fields = ('author', 'published','title', 'body', 'total_likes', 'likes', 'comments')
+        fields = ('author', 'published','title', 'body', 'total_likes', 'tags', 'likes', 'comments')
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('author', 'title', 'body', 'draft')
+
+# {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false}
