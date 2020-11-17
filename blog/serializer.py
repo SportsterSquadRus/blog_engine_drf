@@ -36,12 +36,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True)
+    likes = LikeSerializer(many=True)
     children = RecursiveSerializer(many=True)
 
     class Meta:
         list_serializer_class = FilterReviewListSerializer
         model = Comment
-        fields = '__all__'
+        fields = ('author', 'date_pub', 'total_likes', 'likes', 'children')
 
 
 class PostListSerializer(serializers.ModelSerializer):
