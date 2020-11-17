@@ -18,7 +18,7 @@ class PostDetialView(APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
-# {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false, "tags_id": "lala"}
+# {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false, "tags": [ {"tag_title": "lala"} ]}
 class PostCreateView(APIView):
     def post(self, request):
         serializer = PostCreateSerializer(data=request.data)
@@ -37,6 +37,7 @@ class PostCreateView(APIView):
 
             return Response(status=201)
         else:
+            print(serializer.errors)
             return Response(status=400)
 
 

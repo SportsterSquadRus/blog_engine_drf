@@ -69,10 +69,25 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('author', 'published','title', 'body', 'total_likes', 'tags', 'likes', 'comments')
 
 
+class TagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
 class PostCreateSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Post
-        fields = ('author', 'title', 'body', 'draft')
+        fields = ('author', 'title', 'body', 'draft', 'tags')
 
-# {"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false}
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+
+        post = Post.objects.create(**validated_data)
+        for tag in tags:
+            tag_object, created = Tag.objects.get_or_create(tag_title=tag['tag_title'])
+            post.tags.add(tag_object)
+        return post
+        #{"title": "post3", "body": "lala<<hr />lolo", "author":1, "draft": false, "tags": [ {"tag_title": "lala"}, {"tag_title": "l00a"} ]}
