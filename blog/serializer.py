@@ -3,6 +3,12 @@ from .models import Post, Comment, Like, Tag
 from .utils import banned_tags_check
 
 
+class TagListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
 class TagSerializer(serializers.Serializer):
     tag_title = serializers.CharField(max_length=200)
 

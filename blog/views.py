@@ -1,8 +1,23 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import PostListSerializer, PostSerializer, CommentCreateSerializer, PostCreateSerializer
-from .models import Post, Comment
+from rest_framework import generics
+from .serializer import PostListSerializer, PostSerializer, CommentCreateSerializer, PostCreateSerializer, TagListSerializer
+from .models import Post, Comment, Tag
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
+
+
+class TagListView(generics.ListAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagListSerializer
+
+
+class TagDetailView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self, **kwargs):
+        tag = get_object_or_404(Tag, id=self.kwargs['pk'])
+        return Post.objects.filter(tags=tag, draft=False)
 
 
 class PostsListView(APIView):
